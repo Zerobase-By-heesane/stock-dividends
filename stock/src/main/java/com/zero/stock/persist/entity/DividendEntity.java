@@ -1,5 +1,6 @@
 package com.zero.stock.persist.entity;
 
+import com.zero.stock.model.Dividend;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -26,4 +27,9 @@ public class DividendEntity {
 
     private String dividend;
 
+    public DividendEntity(Dividend dividend, Long companyId) {
+        this.dividend = dividend.getDividend();
+        this.date = dividend.getDate();
+        this.companyId = companyId;
+    }
 }
