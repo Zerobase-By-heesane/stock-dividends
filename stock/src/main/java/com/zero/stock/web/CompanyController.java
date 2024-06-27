@@ -1,12 +1,17 @@
 package com.zero.stock.web;
 
 import com.zero.stock.model.Company;
+import com.zero.stock.persist.entity.CompanyEntity;
 import com.zero.stock.service.CompanyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/company")
@@ -22,13 +27,13 @@ public class CompanyController {
         return null;
     }
 
-    @GetMapping("")
-    public ResponseEntity<?> searchCompany(@RequestParam String companyName) {
-
-        return null;
+    @GetMapping
+    public ResponseEntity<?> searchCompany(final Pageable pageable) {
+        Page<CompanyEntity> companies = this.companyService.getAllCompanies(pageable);
+        return ResponseEntity.ok(companies);
     }
 
-    @PostMapping("")
+    @PostMapping
     public ResponseEntity<?> addCompany(@RequestBody Company request) {
         String ticker  = request.getTicker().trim();
         if(ObjectUtils.isEmpty(ticker)){
