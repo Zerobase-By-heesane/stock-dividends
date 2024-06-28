@@ -8,7 +8,9 @@ import com.zero.stock.persist.entity.DividendRepository;
 import com.zero.stock.scraper.Scrapper;
 import lombok.RequiredArgsConstructor;
 
+import org.apache.commons.collections4.Trie;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import com.zero.stock.model.Company;
@@ -21,6 +23,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CompanyService {
 
+
+    private final Trie trie;
     private final Scrapper scrapper;
 
     private final CompanyRepository companyRepository;
@@ -59,5 +63,30 @@ public class CompanyService {
 
     public Page<CompanyEntity> getAllCompanies(Pageable pageable){
         return this.companyRepository.findAll(pageable);
+    }
+
+    public void addAutoCompleteKeyword(String keyword){
+        this.trie.put(keyword, null);
+    }
+
+    public List<String> autoComplete(String keyword){
+        return (List<String>) this.trie
+                .prefixMap(keyword)
+                .keySet()
+                .stream()
+                .limit(10)
+                .collect(Collectors.toList());
+    }
+
+    public void deleteAutoCompleteKeyword(String keyword){
+        this.trie.remove(keyword);
+    }
+
+    public List<String> getCompanyNamesByKeyword(String keyword){
+        Pageable limit = PageRequest.of(0,10);
+        Page<CompanyEntity> companyEntities = this.companyRepository.findByNameStartingWithIgnoreCase(keyword,limit);
+        return companyEntities.stream()
+                .map(CompanyEntity::getName)
+                .collect(Collectors.toList());
     }
 }
