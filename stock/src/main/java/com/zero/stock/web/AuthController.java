@@ -2,7 +2,6 @@ package com.zero.stock.web;
 
 import com.zero.stock.model.Auth;
 import com.zero.stock.persist.entity.MemberEntity;
-import com.zero.stock.persist.entity.MemberRepository;
 import com.zero.stock.security.TokenProvider;
 import com.zero.stock.service.MemberService;
 import lombok.RequiredArgsConstructor;
