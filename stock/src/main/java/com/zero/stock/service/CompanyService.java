@@ -89,4 +89,17 @@ public class CompanyService {
                 .map(CompanyEntity::getName)
                 .collect(Collectors.toList());
     }
+
+    public String deleteCompany(String ticker) {
+        CompanyEntity companyEntity = this.companyRepository.findByTicker(ticker).orElseThrow(
+                () -> new RuntimeException("Not found company -> " + ticker)
+        );
+
+        this.dividendRepository.deleteAllByCompanyId(companyEntity.getId());
+        this.companyRepository.delete(companyEntity);
+
+        this.deleteAutoCompleteKeyword(companyEntity.getName());
+
+        return companyEntity.getName();
+    }
 }
