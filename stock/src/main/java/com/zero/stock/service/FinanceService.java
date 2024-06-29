@@ -3,11 +3,13 @@ package com.zero.stock.service;
 import com.zero.stock.model.Company;
 import com.zero.stock.model.Dividend;
 import com.zero.stock.model.ScrapedResult;
+import com.zero.stock.model.constant.CacheKey;
 import com.zero.stock.persist.entity.CompanyEntity;
 import com.zero.stock.persist.entity.CompanyRepository;
 import com.zero.stock.persist.entity.DividendEntity;
 import com.zero.stock.persist.entity.DividendRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +22,9 @@ public class FinanceService {
     private final CompanyRepository companyRepository;
     private final DividendRepository dividendRepository;
 
+    // 요청이 자주 들어오는가? -> 자주 들어오는 경우 캐싱을 고려해볼 수 있음
+    // 자주 변경되는 데이터인가? -> 자주 변경되는 데이터인 경우 캐싱을 사용하면 데이터 불일치 문제가 발생할 수 있음
+    @Cacheable(key = "#companyName", value= CacheKey.KEY_FINANCE)
     public ScrapedResult getDividendsByCompanyName(String companyName){
         // 1. 회사명을 기준으로 회사 정보를 조회
         CompanyEntity companyEntity = this.companyRepository.findByName(companyName).orElseThrow(
