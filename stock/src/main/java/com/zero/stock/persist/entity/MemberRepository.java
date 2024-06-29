@@ -1,6 +1,5 @@
 package com.zero.stock.persist.entity;
 
-import com.zero.stock.model.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
