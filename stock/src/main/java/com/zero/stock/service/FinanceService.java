@@ -1,5 +1,6 @@
 package com.zero.stock.service;
 
+import com.zero.stock.exception.impl.NoCompanyException;
 import com.zero.stock.model.Company;
 import com.zero.stock.model.Dividend;
 import com.zero.stock.model.ScrapedResult;
@@ -26,9 +27,7 @@ public class FinanceService {
     @Cacheable(key = "#companyName", value = CacheKey.KEY_FINANCE)
     public ScrapedResult getDividendsByCompanyName(String companyName) {
         // 1. 회사명을 기준으로 회사 정보를 조회
-        CompanyEntity companyEntity = this.companyRepository.findByName(companyName).orElseThrow(
-                () -> new RuntimeException("Not found company -> " + companyName)
-        );
+        CompanyEntity companyEntity = this.companyRepository.findByName(companyName).orElseThrow(NoCompanyException::new);
 
         // 2. 조회한 회사 정보를 기반으로 배당금 정보를 조회
         List<Dividend> dividendEntities = this.dividendRepository.findByCompanyId(companyEntity.getId())
