@@ -5,6 +5,7 @@ import com.zero.stock.persist.entity.MemberEntity;
 import com.zero.stock.security.TokenProvider;
 import com.zero.stock.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 @RequestMapping("/auth")
 public class AuthController {
 
@@ -27,6 +29,7 @@ public class AuthController {
     @PostMapping("/signin")
     public ResponseEntity<?> signIn(@RequestBody Auth.SignIn signInRequest) {
         MemberEntity memberEntity = this.memberService.authenticate(signInRequest);
+        log.info("user login : " + memberEntity.getUsername());
         return ResponseEntity.ok(this.tokenProvider.generateToken(memberEntity.getUsername(), memberEntity.getRoles()));
     }
 
