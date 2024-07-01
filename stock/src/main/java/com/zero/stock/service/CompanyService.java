@@ -1,5 +1,8 @@
 package com.zero.stock.service;
 
+import com.zero.stock.exception.impl.AlreadyExistTickerException;
+import com.zero.stock.exception.impl.FailedToScrapeException;
+import com.zero.stock.exception.impl.NoCompanyException;
 import com.zero.stock.model.ScrapedResult;
 import com.zero.stock.persist.entity.CompanyEntity;
 import com.zero.stock.persist.entity.CompanyRepository;
@@ -35,7 +38,7 @@ public class CompanyService {
 
         // 존재하면,
         if(this.companyRepository.existsByTicker(ticker)){
-            throw new RuntimeException("Already exists ticker -> "+ ticker);
+            throw new AlreadyExistTickerException();
         }
 
         return this.storeCompanyAndDividend(ticker);
@@ -45,7 +48,7 @@ public class CompanyService {
         // Ticker를 기준으로 회사를 스크래핑
         Company company = this.scrapper.scrapCompanyByTicker(ticker);
         if(ObjectUtils.isEmpty(company)){
-            throw new RuntimeException("Failed to scrap ticker -> "+ ticker);
+            throw new FailedToScrapeException();
         }
         // 해당 회사가 존재할 경우, 해당 회사의 배당금 정보 스크래핑
         ScrapedResult scrapResult = this.scrapper.scrap(company);
@@ -91,9 +94,7 @@ public class CompanyService {
     }
 
     public String deleteCompany(String ticker) {
-        CompanyEntity companyEntity = this.companyRepository.findByTicker(ticker).orElseThrow(
-                () -> new RuntimeException("Not found company -> " + ticker)
-        );
+        CompanyEntity companyEntity = this.companyRepository.findByTicker(ticker).orElseThrow(NoCompanyException::new);
 
         this.dividendRepository.deleteAllByCompanyId(companyEntity.getId());
         this.companyRepository.delete(companyEntity);
